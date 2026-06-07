@@ -3,103 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Question</title>
+<title>Do You Love Me?</title>
 
 <style>
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, sans-serif;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
+    background:#ffeaf2;
+    height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
-    background:#ffe6ec;
+    overflow:hidden;
 }
 
 .container{
     text-align:center;
 }
 
-img{
+.gif{
     width:220px;
-    margin-bottom:20px;
+    border-radius:20px;
 }
 
-h2{
-    margin-bottom:20px;
+h1{
+    margin:20px 0;
+    color:#ff4081;
 }
 
-.button-container{
+.buttons{
     position:relative;
     width:300px;
-    height:120px;
+    height:150px;
     margin:auto;
 }
 
 button{
-    padding:12px 25px;
+    padding:12px 28px;
     border:none;
-    border-radius:20px;
+    border-radius:30px;
+    font-size:18px;
     cursor:pointer;
-    font-size:16px;
+    transition:.3s;
 }
 
-#yesBtn{
-    background:#ff5f9e;
+#yes{
+    background:#ff4081;
     color:white;
 }
 
-#noBtn{
-    background:#ddd;
+#yes:hover{
+    transform:scale(1.1);
+}
+
+#no{
+    background:white;
+    color:#ff4081;
     position:absolute;
-    left:170px;
+    left:180px;
 }
 
 .result{
     display:none;
 }
+
+.loader{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+.heart{
+    width:80px;
+    height:80px;
+    background:#ff4081;
+    position:relative;
+    transform:rotate(-45deg);
+    animation:beat 1s infinite;
+}
+
+.heart::before,
+.heart::after{
+    content:"";
+    width:80px;
+    height:80px;
+    background:#ff4081;
+    border-radius:50%;
+    position:absolute;
+}
+
+.heart::before{
+    top:-40px;
+    left:0;
+}
+
+.heart::after{
+    left:40px;
+    top:0;
+}
+
+@keyframes beat{
+    0%,100%{
+        transform:rotate(-45deg) scale(1);
+    }
+    50%{
+        transform:rotate(-45deg) scale(1.2);
+    }
+}
+
+.confetti{
+    position:absolute;
+    font-size:24px;
+    animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+    from{
+        transform:translateY(-100vh);
+    }
+    to{
+        transform:translateY(100vh);
+    }
+}
 </style>
 </head>
 <body>
 
-<div class="container question-container">
-    <img src="https://media.tenor.com/YTw87WdiaasAAAAi/tkthao219-bubududu.gif" alt="cute gif">
+<div class="container question">
+    <img class="gif"
+        src="https://media.tenor.com/YTw87WdiaasAAAAi/tkthao219-bubududu.gif">
 
-    <h2>Do you love me?</h2>
+    <h1>Do you love me? ❤️</h1>
 
-    <div class="button-container">
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
+    <div class="buttons">
+        <button id="yes">Yes</button>
+        <button id="no">No</button>
     </div>
 </div>
 
-<div class="container result">
-    <img src="https://media.tenor.com/xI8X94Z_emgAAAAi/tkthao219-bubududu.gif" alt="love gif">
+<div class="loader" id="loader">
+    <div class="heart"></div>
+    <h2>Processing your answer...</h2>
+</div>
 
-    <h2>I knew it 😍</h2>
+<div class="container result" id="result">
+    <img class="gif"
+        src="https://media.tenor.com/xI8X94Z_emgAAAAi/tkthao219-bubududu.gif">
+
+    <h1>I knew it! 😍❤️</h1>
 </div>
 
 <script>
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
 
-noBtn.addEventListener("mouseover", () => {
-    const x = Math.random() * 250;
-    const y = Math.random() * 100;
+noBtn.addEventListener("mouseover", moveButton);
+noBtn.addEventListener("click", moveButton);
 
-    noBtn.style.left = `${x}px`;
-    noBtn.style.top = `${y}px`;
-});
+function moveButton(){
+    const maxX = window.innerWidth - 150;
+    const maxY = window.innerHeight - 100;
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.random()*maxX + "px";
+    noBtn.style.top = Math.random()*maxY + "px";
+}
 
 yesBtn.addEventListener("click", () => {
-    document.querySelector(".question-container").style.display = "none";
-    document.querySelector(".result").style.display = "block";
+
+    document.querySelector(".question").style.display="none";
+    document.getElementById("loader").style.display="flex";
+
+    setTimeout(() => {
+
+        document.getElementById("loader").style.display="none";
+        document.getElementById("result").style.display="block";
+
+        createConfetti();
+
+    },2500);
 });
+
+function createConfetti(){
+
+    const emojis = ["❤️","💖","💕","💘","😍"];
+
+    for(let i=0;i<60;i++){
+
+        const confetti = document.createElement("div");
+
+        confetti.classList.add("confetti");
+        confetti.innerHTML =
+            emojis[Math.floor(Math.random()*emojis.length)];
+
+        confetti.style.left =
+            Math.random()*window.innerWidth + "px";
+
+        confetti.style.animationDuration =
+            (Math.random()*3+2)+"s";
+
+        document.body.appendChild(confetti);
+
+        setTimeout(()=>{
+            confetti.remove();
+        },5000);
+    }
+}
 </script>
 
 </body>
